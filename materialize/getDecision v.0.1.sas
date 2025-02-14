@@ -137,6 +137,14 @@
 	        		 	SELECT DISTINCT Monotonic()+&maxDecisionId as decisionId ,"&constraintName" AS decisionName, customerId, &segmentId AS segmentId, 0 AS result 
 	        		 	FROM &CustomerData
 	        		 	WHERE &attribute &operator &constraintValue
+	        		 	AND customerId NOT IN (
+	        		 		SELECT customerId FROM &Decisions
+	        		 		WHERE result = 1
+	        		 	)
+	        		 	AND customerId IN (
+	        		 		SELECT customerId FROM &Segment
+	        		 		WHERE segmentId = &segmentId
+	        		 	)
 	        		 );
 	        		 INSERT INTO &Decisions (decisionId, decisionName, customerId, segmentId, result)
 	        		 SELECT DISTINCT decisionId, decisionName, customerId, segmentId, result FROM work.dummyDecisions;
